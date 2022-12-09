@@ -108,15 +108,8 @@ with tab2:
         optimizer = optim.Adamax([input_img],lr = 0.001)
     elif optim_select == 'RMSprop':
         optimizer =  optim.RMSprop([input_img],lr = 0.001, momentum = 0.9)
-
-#############################################################################################################################################Visualize the network created in previous tab
-#with tab3:
-    
-    
-    
     
 #############################################################################################################################################Execute the code
-#with tab4:
 with tab3:
     
     st.header('Below are the parameters you set for your model. Click on the draw button to render your new, stylized image.')
@@ -227,48 +220,50 @@ with tab3:
         run = [0]
         content_l = []
         style_l = []
-        
-        with st.spinner('Painting, give me some quite time!'):
-            while run[0] <= num_iterations:
+        with col4c:
+            with st.spinner('Painting, give me some quite time!'):
+                while run[0] <= num_iterations:
             
-                with torch.no_grad():
-                    input_img.clamp_(0, 1) 
-                optimizer.zero_grad()
-                model(input_img)
-                style_score = 0
-                content_score = 0
+                    with torch.no_grad():
+                        input_img.clamp_(0, 1) 
+                    optimizer.zero_grad()
+                    model(input_img)
+                    style_score = 0
+                    content_score = 0
 
-                for sl in style_losses:
-                    style_score += sl.loss
-                style_l.append(style_score)
+                    for sl in style_losses:
+                        style_score += sl.loss
+                    style_l.append(style_score)
                     
-                for cl in content_losses:
-                    content_score += cl.loss
-                content_l.append(content_score)
+                    for cl in content_losses:
+                        content_score += cl.loss
+                    content_l.append(content_score)
                     
-                style_score *= style_weight
-                content_score *= content_weight
-                loss = style_score + content_score
-                loss.backward()
+                    style_score *= style_weight
+                    content_score *= content_weight
+                    loss = style_score + content_score
+                    loss.backward()
 
-                run[0] += 1
-                optimizer.step()
+                    run[0] += 1
+                    optimizer.step()
 
-        st.success('vualá')
+            #st.success('vualá')
         with torch.no_grad():
             input_img.clamp_(0, 1)
         
         with col4c:
             st.subheader('Stylized Image')
-            stylized = st.image(torch.permute(torch.squeeze(input_img),(1,2,0)).detach().cpu().numpy(), 
+            stylized = st.image(torch.permute(torch.squeeze(input_img),
+                                (1,2,0)).detach().cpu().numpy(), 
                                 use_column_width = True)
-            s_data = torch.permute(torch.squeeze(input_img),(1,2,0)).detach().cpu().numpy()
+            s_data = torch.permute(torch.squeeze(input_img),
+                                   (1,2,0)).detach().cpu().numpy()
             s_bytes = s_data.tobytes()
             
-            btn = st.download_button(label="Download image",
-                                     data=s_bytes,
-                                     file_name="stylized.jpg")
-                
+            btn = st.download_button(label="Download image", data=s_bytes, file_name="stylized.jpg")
+            
+            st.success('vualá')
+            
 #############################################################################################################################################Visualizing Metrics
 with tab4:
     
@@ -303,7 +298,7 @@ with tab4:
             st.pyplot(figs)
     
     else:
-        st.write('You forgot to draw something!')
+        st.write('You forgot to draw something! Go back to step 3.')
     
 
 
