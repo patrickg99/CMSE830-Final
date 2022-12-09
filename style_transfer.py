@@ -54,11 +54,11 @@ with tab1:
     col1, col2 = st.columns(2)
 
     with col1:
-        st.header('Content Image')
+        st.subheader('Content Image')
         st.image(content_url)
 
     with col2:
-        st.header('Style Image')
+        st.subheader('Style Image')
         st.image(style_url)
     
     x_content = load_image(content_url)
@@ -88,6 +88,7 @@ with tab2:
     input_img.requires_grad_(True)
     
     st.subheader('Select the optimizer used in this model:')
+    st.text('Details regarding the specifics of each optimizer can be found below.')
     
     tab2a, tab2b, tab2c, tab2d = st.tabs(['SGD','Adam','Adamax','RMSprop'])
     with tab2a:
