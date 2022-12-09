@@ -73,12 +73,16 @@ with tab2:
     num_iterations = st.slider('Number of Iterations', min_value = 10, max_value = 1000, step = 10, value = 100)
     
     st.subheader('Select the weight that the content image carries:')
+    if st.button('What are weights?'):
+        st.write('Weights control the signal (or the strength of the connection) between two neurons. In other words, a weight decides how much influence the input will have on the output.')
     content_weight = st.slider('Content Weight', min_value = 0.0, max_value = 2.0, step = 0.1, value = 0.5)
     
     st.subheader('Select the weight that the style image carries:')
     style_weight = st.slider('Style Weight', min_value = 0, max_value = 2000000, step = 10000, value = 1000000)
     
     st.subheader('Select the number of convolutional layers the content image is passed through:')
+    if st.button('What is a convolutional layer?'):
+        st.write('https://www.ibm.com/cloud/learn/convolutional-neural-networks#:~:text=The%20convolutional%20layer%20is%20the%20first%20layer%20of,its%20complexity%2C%20identifying%20greater%20portions%20of%20the%20image')
     content_layers_default = st.multiselect('Select the amount of convolutional layers in this model (Must be ordered):', ['conv_1', 'conv_2', 'conv_3', 'conv_4', 'conv_5'], ['conv_4'])
     
     st.subheader('Select the number of convolutional layers the style image is passed through:')
