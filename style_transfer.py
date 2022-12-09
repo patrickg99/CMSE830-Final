@@ -23,12 +23,8 @@ import os
 st.set_page_config(layout="wide")
 st.title('CNN Style Transfer: Create Your Own Digital Art')
 st.image('https://th.bing.com/th/id/OIP.v5RJ81B-TZqxVs_avHemRgHaDA?pid=ImgDet&rs=1')#, use_column_width = True)
-#st.subheader('Please insert the URL of a .jpg into the two cells you see below. The first cell is the image you want the style tranform to be applied to and the second cell is the style you want applied.')
 
-#tab1, tab2 , tab3 , tab4, tab5 = st.tabs(["Content and Style Image Loader",
-# "Fine-Tune Parameters", "Visualize VGG19 Network", "Become A Digital Picaso", "Model Metrics"])
-
-tab1, tab2 , tab3 = st.tabs(["Content and Style Image Loader", "Fine-Tune Parameters", "Become A Digital Picaso"])
+tab1, tab2 , tab3, tab4= st.tabs(["Content and Style Image Loader (Step 1)", "Fine-Tune Parameters (Step 2)", "Become A Digital Picaso (Step 3)", "Neural Network Metrics (Step 4)"])
 
 ############################################################################################################################################
 #Loading in data
@@ -83,10 +79,10 @@ with tab2:
     style_weight = st.slider('Style Weight', min_value = 0, max_value = 2000000, step = 10000, value = 1000000)
     
     st.subheader('Select the number of convolutional layers the content image is passed through:')
-    content_layers_default = st.multiselect('Select the amount of convolutional layers in this model:', ['conv_1', 'conv_2', 'conv_3', 'conv_4', 'conv_5'], ['conv_4'])
+    content_layers_default = st.multiselect('Select the amount of convolutional layers in this model (Must be ordered):', ['conv_1', 'conv_2', 'conv_3', 'conv_4', 'conv_5'], ['conv_4'])
     
     st.subheader('Select the number of convolutional layers the style image is passed through:')
-    style_layers_default = st.multiselect('Select the amount of convolutional layers in this model:', ['conv_1', 'conv_2', 'conv_3', 'conv_4', 'conv_5', 'conv_6', 'conv_7', 'conv_8', 'conv_9', 'conv_10'], ['conv_1', 'conv_2', 'conv_3', 'conv_4', 'conv_5']) 
+    style_layers_default = st.multiselect('Select the amount of convolutional layers in this model (Must be ordered):', ['conv_1', 'conv_2', 'conv_3', 'conv_4', 'conv_5', 'conv_6', 'conv_7', 'conv_8', 'conv_9', 'conv_10'], ['conv_1', 'conv_2', 'conv_3', 'conv_4', 'conv_5']) 
     
     input_img = x_content.clone()
     input_img.requires_grad_(True)
@@ -229,7 +225,12 @@ with tab3:
                                                                          normalization_std, x_style, x_content)
         model.requires_grad_(False)
         run = [0]
-        while run[0] <= num_iterations:
+        content_l = []
+        style_l = []
+        
+        with st.spinner('Painting, give me some quite time!'):
+            while run[0] <= num_iterations:
+            
                 with torch.no_grad():
                     input_img.clamp_(0, 1) 
                 optimizer.zero_grad()
@@ -239,27 +240,70 @@ with tab3:
 
                 for sl in style_losses:
                     style_score += sl.loss
+                style_l.append(style_score)
                     
                 for cl in content_losses:
                     content_score += cl.loss
+                content_l.append(content_score)
                     
                 style_score *= style_weight
                 content_score *= content_weight
                 loss = style_score + content_score
                 loss.backward()
+
                 run[0] += 1
                 optimizer.step()
 
+        st.success('vualá')
         with torch.no_grad():
             input_img.clamp_(0, 1)
         
         with col4c:
             st.subheader('Stylized Image')
-            stylized = st.image(torch.permute(torch.squeeze(input_img),(1,2,0)).detach().cpu().numpy(), use_column_width = True)
-        with col4:
-            with open("stylized", "rb") as file:
-                btn = st.download_button(
-                label="Download image",
-                data=file,
-                file_name="Stylized",
-                mime="image/png")
+            stylized = st.image(torch.permute(torch.squeeze(input_img),(1,2,0)).detach().cpu().numpy(), 
+                                use_column_width = True)
+            s_data = torch.permute(torch.squeeze(input_img),(1,2,0)).detach().cpu().numpy()
+            s_bytes = s_data.tobytes()
+            
+            btn = st.download_button(label="Download image",
+                                     data=s_bytes,
+                                     file_name="stylized.jpg")
+                
+#############################################################################################################################################Visualizing Metrics
+with tab4:
+    
+    st.header('Visualizing your losses')
+    
+    
+    if execute == True:
+        cl_y = torch.asarray(content_l).detach().cpu().numpy()
+        cl_x = np.arange(0,num_iterations+1,1)
+    
+        sl_y = torch.asarray(style_l).detach().cpu().numpy()
+        sl_x = np.arange(0,len(sl_y),1)
+    
+        figc, axc = plt.subplots()
+        axc.plot(cl_x, cl_y, c = 'orange')
+        axc.set_xlabel('# of Iterations')
+        axc.set_ylabel('Content Loss Value')
+        axc.set_title('Content Loss')
+    
+        figs, axs = plt.subplots()
+        axs.plot(sl_x, sl_y, c = 'green')
+        axs.set_yscale('log')
+        axs.set_xlabel('# of Iterations')
+        axs.set_ylabel('Style Loss Value (log)')
+        axs.set_title('Style Loss')
+    
+        t4col1, t4col2 = st.columns(2)
+        with t4col1:
+            st.pyplot(figc)
+        
+        with t4col2:
+            st.pyplot(figs)
+    
+    else:
+        st.write('You forgot to draw something!')
+    
+
+
