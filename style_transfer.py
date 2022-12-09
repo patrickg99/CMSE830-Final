@@ -67,7 +67,7 @@ with tab1:
 #############################################################################################################################################Fine-Tune Params
 
 with tab2:
-    st.header('Below are six seperate options to chose from, they each control various aspects as to how well the style transfer will process.')
+    st.subheader('Below are six seperate options to chose from, they each control various aspects as to how well the style transfer will process.')
     
     st.subheader('Select the Number of iterations that the model uses to learn the Style:')
     num_iterations = st.slider('Number of Iterations', min_value = 10, max_value = 1000, step = 10, value = 100)
@@ -112,7 +112,7 @@ with tab2:
 #############################################################################################################################################Execute the code
 with tab3:
     
-    st.header('Below are the parameters you set for your model. Click on the draw button to render your new, stylized image.')
+    st.subheader('Below are the parameters you set for your model. Click on the draw button to render your new, stylized image.')
     
     col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
     col1.metric("Number of Iterations", num_iterations)
@@ -267,7 +267,7 @@ with tab3:
 #############################################################################################################################################Visualizing Metrics
 with tab4:
     
-    st.header('Visualizing your losses')
+    st.subheader('Visualizing your losses')
     
     
     if execute == True:
