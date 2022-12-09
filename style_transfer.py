@@ -88,7 +88,7 @@ with tab2:
     input_img.requires_grad_(True)
     
     st.subheader('Select the optimizer used in this model:')
-    st.text('Details regarding the specifics of each optimizer can be found below.')
+    st.caption('Details regarding the specifics of each optimizer can be found below.')
     
     tab2a, tab2b, tab2c, tab2d = st.tabs(['SGD','Adam','Adamax','RMSprop'])
     with tab2a:
